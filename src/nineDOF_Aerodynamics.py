@@ -1,8 +1,10 @@
 #nineDOF_Aerodynamics.py
 import numpy as np
 from nineDOF_Control import get_control
-from nineDOF_Parameters import BL_panel, SL_panel, WL_panel, num_panels, x_pmp, y_pmp, z_pmp
+from nineDOF_Parameters import BL_panel, SL_panel, WL_panel, d_bar_parafoil, deadband_parafoil, delta_nom, num_panels, x_pmp, y_pmp, z_pmp
 from nineDOF_Transform import skew
+
+from scipy.spatial.transform import Rotation
 
 def compute_aerodynamic_velocity(state, i):
     uG, vG, wG = state['uG'], state['vG'], state['wG'] #Translation Velocities from Current State
@@ -22,14 +24,26 @@ def compute_aerodynamic_velocity(state, i):
 
 
 def compute_aerodynamics(state, control):
+    #Getting State
     uG, vG, wG = state['uG'], state['vG'], state['wG'] #Translation Velocities from Current State
     pP, qP, rP = state['pP'], state['qP'], state['rP'] #Angular Velocities of Parafoil
     pC, qC, rC = state['pC'], state['qC'], state['rC'] #Angular Velocities of Cradle
+    p_quat = state['p_quat'] #Parafoil Quaternion
+    c_quat = state['c_quat'] #Cradle Quaternion
+
+    #Calculating Alpha and Beta
+    p_phi, p_theta, p_psi = Rotation.from_quat(p_quat).as_euler('xyz', degrees = False)
+
+
 
     #Getting Controls
     deltaL = control.get('delta_left', 0.0)
     deltaR = control.get('delta_right', 0.0)
     
+    deltaA = (deltaR - deltaL) / d_bar_parafoil
+    deltaS = ((0.5) * (deltaR + deltaL) - deadband_parafoil + delta_nom) / d_bar_parafoil
+
+
     
 
 

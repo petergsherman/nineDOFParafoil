@@ -48,18 +48,18 @@ z_pmp = 5.75 #Z Distance from Parafoil Center of Gravity to Apparent Mass Center
 
 #Basic Apparent Mass Matrix
 I_AM = ([[0.984, 0,      0],
-        [0,     0.0988, 0],
-        [0,     0,      36.405]]) #[kg]
+         [0,     0.0988, 0],
+         [0,     0,      36.405]]) #[kg]
 
 #Basic Apparent Inertia Matrix
 I_AI = ([[194.21, 0,     0],
-        [0,      7.531, 0],
-        [0,      0,     6.9106]]) #[kg-m]
+         [0,      7.531, 0],
+         [0,      0,     6.9106]]) #[kg-m]
 
 #Spanwise Camber Matrix
 I_H = ([[0, 0, 0],
-       [0, 0, 0],
-       [0, 0, 0]]) #[kg-m]
+        [0, 0, 0],
+        [0, 0, 0]]) #[kg-m]
 
 gamma_nom = 0.0610 #Nominal Incidence Angle [rad]
 delta_nom = 0.3 #Nominal Symmetric Break Deflection
@@ -86,7 +86,7 @@ AOATable = ([[0.1800, 0.0280],
              [0.2500, 0.0350], 
              [0.3200, 0.0700]])
 
-def getInterpolatedAero(sigma, alpha):
+def getInterpolatedAero(deltaS, alpha):
     """
     Given δS/ d̄ and AOA, return (CD0, CDA2, CL0, CLA, CNDA2) via linear interpolation.
     If asked value is outside the tabulated range, this clamps to the ends.
@@ -94,10 +94,10 @@ def getInterpolatedAero(sigma, alpha):
     x0 = aeroTable[:,0]
     x1 = AOATable[:,0]
 
-    CD0 = np.interp(sigma, x0, aeroTable[:,1])
-    CDA2 = np.interp(sigma, x0, aeroTable[:,2])
-    CL0 = np.interp(sigma, x0, aeroTable[:,3])
-    CLA = np.interp(sigma, x0, aeroTable[:,4])
+    CD0 = np.interp(deltaS, x0, aeroTable[:,1])
+    CDA2 = np.interp(deltaS, x0, aeroTable[:,2])
+    CL0 = np.interp(deltaS, x0, aeroTable[:,3])
+    CLA = np.interp(deltaS, x0, aeroTable[:,4])
     CNDA2 = np.interp(alpha, x1, AOATable[:,1])
 
     return CD0, CDA2, CL0, CLA, CNDA2
