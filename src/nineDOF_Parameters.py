@@ -68,7 +68,7 @@ tau = 2.0 #Brake Deflection Time Constant (Note actuators are also rate limited 
 #Aerodymamic Parameters
 CM0 = 0.0
 CMQ = -1.00
-CMDE = 0.00
+CMDS = 0.00
 CYB = -1.00
 CNB = 0.0 #(-1.00) CHECK IF ERRORS PERSIST
 CLB = 0.0
@@ -98,9 +98,9 @@ def getInterpolatedAero(deltaS, alpha):
     CDA2 = np.interp(deltaS, x0, aeroTable[:,2])
     CL0 = np.interp(deltaS, x0, aeroTable[:,3])
     CLA = np.interp(deltaS, x0, aeroTable[:,4])
-    CNDA2 = np.interp(alpha, x1, AOATable[:,1])
+    CND2 = np.interp(alpha, x1, AOATable[:,1])
 
-    return CD0, CDA2, CL0, CLA, CNDA2
+    return CD0, CDA2, CL0, CLA, CND2
 
 
 
