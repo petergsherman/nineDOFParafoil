@@ -30,7 +30,9 @@ def compute_aerodynamics(state, statedot, control):
     V_mag = np.sqrt(uG**2 + vG**2 + wG**2)
     p_phi, p_theta, p_psi = Rotation.from_quat(p_quat).as_euler('xyz', degrees = False)
     c_phi, c_theta, c_psi = Rotation.from_quat(c_quat).as_euler('xyz', degrees = False)
+
     #Calculating Alpha and Beta
+    
 
 
 
