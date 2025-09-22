@@ -1,10 +1,10 @@
 #nineDOF_Aerodynamics.py
 import numpy as np
-from nineDOF_Control import get_control
-from nineDOF_Parameters import b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, num_panels, x_pmp, y_pmp, z_pmp, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1
-from nineDOF_Transform import skew
-
 from scipy.spatial.transform import Rotation
+
+from nineDOF_Control import get_control
+from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, x_pmp, y_pmp, z_pmp, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1
+from nineDOF_Transform import skew
 
 
 
@@ -23,9 +23,9 @@ def compute_aerodynamics(state, control):
     c_quat = state['c_quat'] #Cradle Quaternion
 
     V_mag = np.sqrt(uG**2 + vG**2 + wG**2)
-
-    #Calculating Alpha and Beta
     p_phi, p_theta, p_psi = Rotation.from_quat(p_quat).as_euler('xyz', degrees = False)
+    c_phi, c_theta, c_psi = Rotation.from_quat(c_quat).as_euler('xyz', degrees = False)
+    #Calculating Alpha and Beta
 
 
 
@@ -55,3 +55,24 @@ def compute_aerodynamics(state, control):
     Cl = (CLB * beta) + (CLP * p_bar) + (CLR * r_bar) + (CLDA * deltaA)
     Cm = CM0 + (CMQ * q_bar) + (CMDS * deltaS)
     Cn = (CNB * beta) + (CNP * p_bar) + (CNR * r_bar) + (CND1 * (deltaL / d_bar_parafoil)) - (CND2 * ((deltaL * deltaS) / d_bar_parafoil)) + (CND1 * (deltaR / d_bar_parafoil)) + (CND2 * ((deltaR * deltaS) / d_bar_parafoil))
+
+    #Force Calculations 
+    Fa_parafoil = (0.5) * rho * A_parafoil * (V_mag**2) * np.array([[(-np.cos(alpha) * CD) + (np.sin(alpha) * CL)],
+                                                                    [CY],
+                                                                    [(np.sin(alpha) * CD) + (np.cos(alpha) * CL)]])
+
+    Fg_parafoil = m_parafoil * (9.81) * np.array([-np.sin(p_theta)],
+                                                 [np.sin(p_phi) * np.cos(p_phi)],
+                                                 [np.cos(p_phi) * np.cos(p_theta)])  
+
+    Fa_cradle = (0.5) * rho * (V_mag**2) * A_cradle * C_D_cradle * np.array([uG,
+                                                                             vG,
+                                                                             wG])              
+    
+    Fg_cradle = m_cradle * (9.81) * np.array([-np.sin(c_theta)],
+                                             [np.sin(c_phi) * np.cos(c_phi)],
+                                             [np.cos(c_phi) * np.cos(c_theta)]) 
+    #Moment Calculations
+    Ma_parafoil = (0.5) * rho * A_parafoil * (V_mag**2) * np.array([[b_bar_parafoil * Cl],
+                                                                    [c_bar_parafoil * Cm],
+                                                                    [b_bar_parafoil * Cn]])

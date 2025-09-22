@@ -2,15 +2,15 @@
 import numpy as np
 
 #Parafoil Parameters
-m_parafoil = 3.7 #Parafoil Mass [kg]
-A_parafoil = 18.5 #Parafoil Area [m^2]
-c_bar_parafoil = 2.1 #[m]
-b_bar_parafoil = 8.8 #[m]
+m_parafoil = 8.99 #Parafoil Mass [kg]
+A_parafoil = 27 #Parafoil Area [m^2]
+c_bar_parafoil = 3.87 #[m]
+b_bar_parafoil = 6.99 #[m]
 d_bar_parafoil = 1.0 
 deadband_parafoil = 0.0
-I_parafoil = ([[45.5273, 0,      0],
-              [0,       9.6531, 0],
-              [0,       0,      45.8616]]) #[kg*m^2]
+I_parafoil = ([[74.56, 0,      0],
+              [0,       14.62, 0],
+              [0,       0,      82.8]]) #[kg*m^2]
 
 
 #Cradle Parameters
