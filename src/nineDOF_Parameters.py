@@ -9,8 +9,8 @@ b_bar_parafoil = 6.99 #[m]
 d_bar_parafoil = 1.0 
 deadband_parafoil = 0.0
 I_parafoil = ([[74.56, 0,      0],
-              [0,       14.62, 0],
-              [0,       0,      82.8]]) #[kg*m^2]
+               [0,       14.62, 0],
+               [0,       0,      82.8]]) #[kg*m^2]
 
 
 #Cradle Parameters
@@ -18,8 +18,8 @@ m_cradle = 90.0 #Cradle Mass [kg]
 A_cradle = 0.4337 #Cradle Area [m^2]
 C_D_cradle = 1.0 #Cradle Drag Coefficient
 I_cradle = ([[9.378, 0,      0],
-            [0,     6.0518, 0],
-            [0,     0,      6.2401]]) #[kg*m^2]
+             [0,     6.0518, 0],
+             [0,     0,      6.2401]]) #[kg*m^2]
 
 #Gimbal Parameters
 K_G = 25 #Gimbal Rotational Stiffness [N-m/rad]
