@@ -3,15 +3,13 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from nineDOF_Control import get_control
-from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, x_pmp, y_pmp, z_pmp, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1
+from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, x_pmp, y_pmp, z_pmp, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1, I_H, I_AM, I_AI
 from nineDOF_Transform import skew
 from nineDOF_Atmosphere import getAirDensity
 
 
-def construct_AM_Velocity(omega_W_I, V_G, X_GMp):
-
-    AM_Velocity = V_G + skew(omega_W_I) @ X_GMp
-
+def construct_AM_Velocity(omega_PI, V_G, r_GMp):
+    AM_Velocity = V_G + skew(omega_PI) @ r_GMp
     return AM_Velocity
     
 
@@ -69,7 +67,11 @@ def compute_aerodynamics(state, statedot, control):
 
     #Aerodynamic Apparent Mass Velocity Calculation
     V_G = np.array([uG, vG, wG])
-    omega_W_I = np.array([pP, qP, rP]) #???????????????????????????
+    omega_PI = np.array([pP, qP, rP]) #???????????????????????????
+
+    #Aerodynamic Apparent Mass Velocity Derivative Calculation
+    V_G_dot = np.array([uG_dot, vG_dot, wG_dot])
+    omega_PI_dot = np.array([pP_dot, qP_dot, rP_dot]) #???????????????????????
 
     #Force Calculations 
     Fa_parafoil = (0.5) * rho * A_parafoil * (V_mag**2) * np.array([[(-np.cos(alpha) * CD) + (np.sin(alpha) * CL)],
@@ -84,7 +86,7 @@ def compute_aerodynamics(state, statedot, control):
                                                                              vG,
                                                                              wG])       
 
-    F_am       
+    Fam_parafoil = (I_AM @ AM_Velocity_dot) + (skew(omega_PI) @ I_AM @ AM_Velocity) # + (I_H @ np.array([pP_dot, qP_dot, rp_dot]))  + (skew(omega_PI) @ I_H @ np.array([pP, qP, rP])) since I_H == 0
     
     Fg_cradle = m_cradle * (9.81) * np.array([-np.sin(c_theta)],
                                              [np.sin(c_phi) * np.cos(c_phi)],
@@ -93,3 +95,5 @@ def compute_aerodynamics(state, statedot, control):
     Ma_parafoil = (0.5) * rho * A_parafoil * (V_mag**2) * np.array([[b_bar_parafoil * Cl],
                                                                     [c_bar_parafoil * Cm],
                                                                     [b_bar_parafoil * Cn]])
+
+    Mam_parafoil = I_AI @ omega_PI_dot + (skew(omega_PI) @ I_AI) @ np.array([pP, qP, rP]) # + I_H @ AM_Velocity_dot + skew(omega_PI) @ I_H @ AM_Velocity + V_M_PI blah blah blah becasue I_H == 0
