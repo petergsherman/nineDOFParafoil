@@ -33,7 +33,8 @@ def compute_aerodynamics(state, statedot, control):
     c_phi, c_theta, c_psi = Rotation.from_quat(c_quat).as_euler('xyz', degrees = False)
 
     #Calculating Alpha and Beta
-    
+    alpha = arctan2(-wG, uG)
+    beta = arctan2(vG, np.sqrt(uG**2 + wG**2)) #////////////REVISIT////////////////
 
     #Getting Air Density
     rho = getAirDensity(state['zG'])
