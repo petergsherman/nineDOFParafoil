@@ -5,13 +5,15 @@ from scipy.spatial.transform import Rotation
 from nineDOF_Control import get_control
 from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, x_pmp, y_pmp, z_pmp, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1
 from nineDOF_Transform import skew
+from nineDOF_Atmosphere import getAirDensity
 
 
+def construct_AM_Velocity(omega_W_I, V_G, X_GMp):
 
+    AM_Velocity = V_G + skew(omega_W_I) @ X_GMp
 
-
-
-
+    return AM_Velocity
+    
 
 
 def compute_aerodynamics(state, statedot, control):
@@ -27,6 +29,7 @@ def compute_aerodynamics(state, statedot, control):
     pP_dot, qP_dot, rP_dot = statedot['pP_dot'], statedot['qP_dot'], statedot['rP_dot']
     pC_dot, qC_dot, rC_dot = statedot['pC_dot'], statedot['qC_dot'], statedot['rC_dot']
 
+    #Velocity Magnitude and Euler Angles
     V_mag = np.sqrt(uG**2 + vG**2 + wG**2)
     p_phi, p_theta, p_psi = Rotation.from_quat(p_quat).as_euler('xyz', degrees = False)
     c_phi, c_theta, c_psi = Rotation.from_quat(c_quat).as_euler('xyz', degrees = False)
@@ -34,7 +37,8 @@ def compute_aerodynamics(state, statedot, control):
     #Calculating Alpha and Beta
     
 
-
+    #Getting Air Density
+    rho = getAirDensity(state['zG'])
 
     #Getting Controls
     deltaL = control.get('delta_left', 0.0)
@@ -45,7 +49,7 @@ def compute_aerodynamics(state, statedot, control):
 
 
     #Calculating Aerodynamic Coefficients
-    #Deflection and AOA Interpolated Aerodynamic Coefficients
+    #Deflection and AOA Interpolated Aerodynamic Coefficients from Table Interpolation
     CD0, CDA2, CL0, CLA, CND2 = getInterpolatedAero(deltaS, alpha)
 
     #Non-Dimensional Angular Rates
@@ -63,6 +67,10 @@ def compute_aerodynamics(state, statedot, control):
     Cm = CM0 + (CMQ * q_bar) + (CMDS * deltaS)
     Cn = (CNB * beta) + (CNP * p_bar) + (CNR * r_bar) + (CND1 * (deltaL / d_bar_parafoil)) - (CND2 * ((deltaL * deltaS) / d_bar_parafoil)) + (CND1 * (deltaR / d_bar_parafoil)) + (CND2 * ((deltaR * deltaS) / d_bar_parafoil))
 
+    #Aerodynamic Apparent Mass Velocity Calculation
+    V_G = np.array([uG, vG, wG])
+    omega_W_I = np.array([pP, qP, rP]) #???????????????????????????
+
     #Force Calculations 
     Fa_parafoil = (0.5) * rho * A_parafoil * (V_mag**2) * np.array([[(-np.cos(alpha) * CD) + (np.sin(alpha) * CL)],
                                                                     [CY],
@@ -74,7 +82,9 @@ def compute_aerodynamics(state, statedot, control):
 
     Fa_cradle = (0.5) * rho * (V_mag**2) * A_cradle * C_D_cradle * np.array([uG,
                                                                              vG,
-                                                                             wG])              
+                                                                             wG])       
+
+    F_am       
     
     Fg_cradle = m_cradle * (9.81) * np.array([-np.sin(c_theta)],
                                              [np.sin(c_phi) * np.cos(c_phi)],
