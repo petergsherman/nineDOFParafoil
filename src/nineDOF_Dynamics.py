@@ -25,14 +25,17 @@ def compute_dynamics(state, statedot, control):
     A12 =
     A13 = 
     A14 = 
+
     A21 = 
     A22 = 
     A23 = 
     A24 = 
+
     A31 = 
     A32 = 
     A33 = 
     A34 = 
+    
     A41 = 
     A42 = 
     A43 = 
