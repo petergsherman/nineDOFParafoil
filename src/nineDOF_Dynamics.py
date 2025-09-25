@@ -12,6 +12,9 @@ def compute_dynamics(state, statedot, control):
     p_quat = state['p_quat'] #Parafoil Quaternion
     c_quat = state['c_quat'] #Cradle Quaternion
 
+    p_phi, p_theta, p_psi = Rotation.from_quat(p_quat).as_euler('xyz', degrees = False)
+    c_phi, c_theta, c_psi = Rotation.from_quat(c_quat).as_euler('xyz', degrees = False)
+
     #Getting State Derivatives
     uG_dot, vG_dot, wG_dot = statedot['uG_dot'], statedot['vG_dot'], statedot['wG_dot']
     pP_dot, qP_dot, rP_dot = statedot['pP_dot'], statedot['qP_dot'], statedot['rP_dot']
@@ -22,21 +25,21 @@ def compute_dynamics(state, statedot, control):
 
     #Calculating A Matrix 
     A11 =
-    A12 =
-    A13 = 
-    A14 = 
+    A12 = 0
+    A13 = m_cradle * T_IC(c_phi, c_theta, c_psi) @ T_IP(p_phi, p_theta, p_psi).T
+    A14 = -T_IC(c_phi, c_theta, c_psi)
 
-    A21 = 
+    A21 = 0
     A22 = 
-    A23 = 
-    A24 = 
+    A23 = m_parafoil + I_AM
+    A24 = T_IP(p_phi, p_theta, p_psi)
 
-    A31 = 
-    A32 = 
-    A33 = 
+    A31 = I_Cradle
+    A32 = 0
+    A33 = 0
     A34 = 
     
-    A41 = 
+    A41 = 0
     A42 = 
     A43 = 
     A44 = 

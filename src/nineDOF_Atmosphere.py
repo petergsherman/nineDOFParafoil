@@ -23,6 +23,3 @@ def getAirDensity(altitude):
 
     return rho
 
-def getWindVector(altitude):
-    uW, vW, wW = 0.0, 0.0, 0.0
-    
