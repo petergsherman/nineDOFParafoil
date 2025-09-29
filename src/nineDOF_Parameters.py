@@ -32,7 +32,7 @@ z_gc = 0.47 #Z Distance from Gimbal to Cradle Center of Gravity [m]
 
 x_gp = 0.0 #X Distance from Cradle to Parafoil Center of Gravity [m]
 y_gp = 0.0 #Y Distance from Cradle to Parafoil Center of Gravity [m]
-z_gp = -5.75 #Z Distance from Cradle to Parafoil Center of Gravity [m]
+z_gp = -7.622 #Z Distance from Cradle to Parafoil Center of Gravity [m]
 
 x_pr = 0.0 #X Distance from Parafoil Center of Gravity to Rotation Point [m]
 y_pr = 0.0 #Y Distance from Parafoil Center of Gravity to Rotation Point [m]
@@ -44,7 +44,8 @@ z_rap = 0.0 #Z Distance from Rotation Point to Aerodynamic Center [m]
 
 x_pmp = 0.0 #X Distance from Parafoil Center of Gravity to Apparent Mass Center [m]
 y_pmp = 0.0 #Y Distance from Parafoil Center of Gravity to Apparent Mass Center [m]
-z_pmp = 5.75 #Z Distance from Parafoil Center of Gravity to Apparent Mass Center [m]
+z_pmp = 7.622 #Z Distance from Parafoil Center of Gravity to Apparent Mass Center [m]
+r_GMp = np.array([x_pmp, y_pmp, z_pmp]) #Position Vector from Parafoil Center of Gravity to Parafoil Apparent Mass Center
 
 #Basic Apparent Mass Matrix
 I_AM = ([[0.984, 0,      0],

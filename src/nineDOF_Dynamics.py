@@ -1,8 +1,13 @@
 #nineDOF_Dynamics.
 import numpy as np
+from scipy.spatial.transform import Rotation
+
 from nineDOF_Aerodynamics import compute_aerodynamics, constructAMVelocity
-from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle
+from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM
 from nineDOF_Transform import skew, T_IP, T_IC
+
+def compute_kinematic_derivatives(state):
+    return
 
 def compute_dynamics(state, statedot, control):
     #Getting State
@@ -34,7 +39,7 @@ def compute_dynamics(state, statedot, control):
     A23 = m_parafoil + I_AM
     A24 = T_IP(p_phi, p_theta, p_psi)
 
-    A31 = I_Cradle
+    A31 = I_cradle
     A32 = 0
     A33 = 0
     A34 = 
