@@ -26,6 +26,7 @@ def compute_aerodynamics(state, statedot, control):
     uG_dot, vG_dot, wG_dot = statedot['uG_dot'], statedot['vG_dot'], statedot['wG_dot']
     pP_dot, qP_dot, rP_dot = statedot['pP_dot'], statedot['qP_dot'], statedot['rP_dot']
     pC_dot, qC_dot, rC_dot = statedot['pC_dot'], statedot['qC_dot'], statedot['rC_dot']
+    p_psi_dot, c_psi_dot = statedot['p_psi_dot'], statedot['c_psi_dot']
 
     #Velocity Magnitude and Euler Angles
     V_mag = np.sqrt(uG**2 + vG**2 + wG**2)
