@@ -8,3 +8,12 @@ state0 = {
     "p_quat": [0, 0, 0, 1], #Parafoil Angular Position Quaternion
     "c_quat": [0, 0, 0, 1] #Cradle Angular Position Quaternion
 }
+
+statedot0 = {
+    "xG_dot" : 0.0, "yG_dot": 0.0, "zG_dot": 0.0, #Xdot, Ydot, and Zdot of Gimbal
+    "uG_dot" : 0.0, "vG_dot" : 0.0, "vG_dot" : 0.0,
+    "pP_dot" : 0.0, "qP_dot" : 0.0, "rP_dot" : 0.0,
+    "pC_dot" : 0.0, "rC_dot" : 0.0, "qC_dot" : 0.0,
+    "p_phi_dot" : 0.0, "p_theta_dot" : 0, "p_psi_dot" : 0.0,
+    "c_phi_dot" : 0.0, "c_theta_dot" : 0, "c_psi_dot" : 0.0,
+}
