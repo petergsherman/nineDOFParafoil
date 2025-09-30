@@ -6,8 +6,6 @@ from nineDOF_Aerodynamics import compute_aerodynamics, constructAMVelocity
 from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM
 from nineDOF_Transform import skew, T_IP, T_IC
 
-def compute_kinematic_derivatives(state):
-    return
 
 def compute_dynamics(state, statedot, control):
     #Getting State
@@ -16,14 +14,21 @@ def compute_dynamics(state, statedot, control):
     pC, qC, rC = state['pC'], state['qC'], state['rC'] #Angular Velocities of Cradle
     p_quat = state['p_quat'] #Parafoil Quaternion
     c_quat = state['c_quat'] #Cradle Quaternion
-
     p_phi, p_theta, p_psi = Rotation.from_quat(p_quat).as_euler('xyz', degrees = False)
     c_phi, c_theta, c_psi = Rotation.from_quat(c_quat).as_euler('xyz', degrees = False)
 
     #Getting State Derivatives
+    xG_dot, yG_dot, zG_dot = statedot['xG_dot'], statedot['yG_dot'], statedot['zG_dot'] 
     uG_dot, vG_dot, wG_dot = statedot['uG_dot'], statedot['vG_dot'], statedot['wG_dot']
     pP_dot, qP_dot, rP_dot = statedot['pP_dot'], statedot['qP_dot'], statedot['rP_dot']
     pC_dot, qC_dot, rC_dot = statedot['pC_dot'], statedot['qC_dot'], statedot['rC_dot']
+    p_phi_dot, p_theta_dot, p_psi_dot = statedot['p_phi_dot'], statedot['p_theta_dot'], statedot['p_psi_dot']
+    c_phi_dot, c_theta_dot, c_psi_dot = statedot['c_phi_dot'], statedot['c_theta_dot'], statedot['c_psi_dot']
+
+    #Constructing State Derivative Vector
+    XYZdot = np.array([xG_dot, yG_dot, zG_dot]) #XYZdot of Gimbal
+    PTPdot_parafoil = np.array([p_phi_dot, p_theta_dot, p_psi_dot]) #PTPdot of Parafoil
+    PTPdot_cradle = np.array([c_phi_dot, c_theta_dot, c_psi_dot]) #PTPdot of Cradle
 
     #Getting Aerodynamic Forces and Moments
     Fa_parafoil, Fam_parafoil, Fg_parafoil, Fa_cradle, Fg_cradle, Ma_parafoil, Mam_parafoil, M_gimbal = compute_aerodynamics(state, statedot, control)
