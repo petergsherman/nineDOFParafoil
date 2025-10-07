@@ -3,13 +3,13 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from nineDOF_Control import get_control
-from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, x_pmp, y_pmp, z_pmp, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1, I_H, I_AM, I_AI, K_G, C_G, r_GMp
+from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, x_pmp, y_pmp, z_pmp, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1, I_H, I_AM, I_AI, K_G, C_G, r_pmp
 from nineDOF_Transform import skew, T_IP
 from nineDOF_Atmosphere import getAirDensity
 
 
-def construct_AM_Velocity(omega_PI, V_G, r_GMp):
-    AM_Velocity = V_G + skew(omega_PI) @ r_GMp
+def construct_AM_Velocity(omega_PI, V_G):
+    AM_Velocity = V_G + skew(omega_PI) @ r_pmp
     return AM_Velocity
     
 
@@ -70,12 +70,12 @@ def compute_aerodynamics(state, statedot, control):
     #Aerodynamic Apparent Mass Velocity Calculation
     V_G = np.array([uG, vG, wG])
     omega_PI = T_IP(p_phi, p_theta, p_psi).T @ np.array([pP, qP, rP]) #???????????????????????????
-    AM_velocity = construct_AM_Velocity(omega_PI, V_G, r_GMp)
+    AM_velocity = construct_AM_Velocity(omega_PI, V_G)
 
     #Aerodynamic Apparent Mass Velocity Derivative Calculation
     V_G_dot = np.array([uG_dot, vG_dot, wG_dot])
     omega_PI_dot = T_IP(p_phi, p_theta, p_psi).T @ np.array([pP_dot, qP_dot, rP_dot]) #???????????????????????
-    AM_Velocity_dot = construct_AM_Velocity(omega_PI_dot, V_G_dot, r_GMp)
+    AM_Velocity_dot = construct_AM_Velocity(omega_PI_dot, V_G_dot)
 
     #Force Calculations 
     Fa_parafoil = (0.5) * rho * A_parafoil * (V_mag**2) * np.array([[(-np.cos(alpha) * CD) + (np.sin(alpha) * CL)],
