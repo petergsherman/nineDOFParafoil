@@ -3,56 +3,34 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from nineDOF_Aerodynamics import compute_aerodynamics, constructAMVelocity
-from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM
+from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM, r_gc
 from nineDOF_Transform import skew, T_IP, T_IC
 
 
 def compute_dynamics(state, statedot, control):
-    #Getting State
-    uG, vG, wG = state['uG'], state['vG'], state['wG'] #Translation Velocities from Current State
-    pP, qP, rP = state['pP'], state['qP'], state['rP'] #Angular Velocities of Parafoil
-    pC, qC, rC = state['pC'], state['qC'], state['rC'] #Angular Velocities of Cradle
-    p_quat = state['p_quat'] #Parafoil Quaternion
-    c_quat = state['c_quat'] #Cradle Quaternion
-    p_phi, p_theta, p_psi = Rotation.from_quat(p_quat).as_euler('xyz', degrees = False)
-    c_phi, c_theta, c_psi = Rotation.from_quat(c_quat).as_euler('xyz', degrees = False)
-
-    #Getting State Derivatives
-    xG_dot, yG_dot, zG_dot = statedot['xG_dot'], statedot['yG_dot'], statedot['zG_dot'] 
-    uG_dot, vG_dot, wG_dot = statedot['uG_dot'], statedot['vG_dot'], statedot['wG_dot']
-    pP_dot, qP_dot, rP_dot = statedot['pP_dot'], statedot['qP_dot'], statedot['rP_dot']
-    pC_dot, qC_dot, rC_dot = statedot['pC_dot'], statedot['qC_dot'], statedot['rC_dot']
-    p_phi_dot, p_theta_dot, p_psi_dot = statedot['p_phi_dot'], statedot['p_theta_dot'], statedot['p_psi_dot']
-    c_phi_dot, c_theta_dot, c_psi_dot = statedot['c_phi_dot'], statedot['c_theta_dot'], statedot['c_psi_dot']
-
-    #Constructing State Derivative Vector
-    XYZdot = np.array([xG_dot, yG_dot, zG_dot]) #XYZdot of Gimbal
-    PTPdot_parafoil = np.array([p_phi_dot, p_theta_dot, p_psi_dot]) #PTPdot of Parafoil
-    PTPdot_cradle = np.array([c_phi_dot, c_theta_dot, c_psi_dot]) #PTPdot of Cradle
-
     #Getting Aerodynamic Forces and Moments
     Fa_parafoil, Fam_parafoil, Fg_parafoil, Fa_cradle, Fg_cradle, Ma_parafoil, Mam_parafoil, M_gimbal = compute_aerodynamics(state, statedot, control)
 
     #Calculating A Matrix 
-    A11 =
+    A11 = m_parafoil * skew(r_gc)
     A12 = 0
-    A13 = m_cradle * T_IC(c_phi, c_theta, c_psi) @ T_IP(p_phi, p_theta, p_psi).T
-    A14 = -T_IC(c_phi, c_theta, c_psi)
+    A13 = m_cradle * T_IC(state[6], state[7], state[8]) @ T_IP(state[3], state[4], state[5]).T
+    A14 = -T_IC(state[6], state[7], state[8])
 
     A21 = 0
-    A22 = 
+    A22 = -I_AM @ skew(r_)
     A23 = m_parafoil + I_AM
-    A24 = T_IP(p_phi, p_theta, p_psi)
+    A24 = T_IP(state[3], state[4], state[5])
 
     A31 = I_cradle
     A32 = 0
     A33 = 0
-    A34 = 
+    A34 = -skew(r_pG) @ T_IC(state[6], state[7], state[8])
     
     A41 = 0
-    A42 = 
-    A43 = 
-    A44 = 
+    A42 = I_parafoil + skew(r_pMp) @ (I_H - I_AM @ skew(r_GMp)) - I_H @ skew(r_GMp) + I_AI
+    A43 = I_H + skew(r_pMp) @ I_AM
+    A44 = skew(r_pG) @ T_IP(state[3], state[4], state[5])
 
     A = np.array([[A11, A12, A13, A14],
                   [A21, A22, A23, A24],
@@ -60,7 +38,7 @@ def compute_dynamics(state, statedot, control):
                   [A41, A42, A43, A44]])
 
     #Calculating B Vector
-    B1 =
+    B1 = Fa_cradle + Fg_cradle - m_cradle * T_IC(state[6], state[7], state[8]) @ T_I @ T_P @ skew(omega_PI) @ np.array(state[9], state[10], state[11]]) + m_cradle * skew(omega_CI) @ skew(omega_CI) @ np.array([xG, yG, zG])
     B2 =
     B3 =
     B4 =
