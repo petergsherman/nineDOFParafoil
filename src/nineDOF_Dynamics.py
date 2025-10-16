@@ -3,14 +3,20 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from nineDOF_Aerodynamics import compute_aerodynamics, constructAMVelocity
-from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM, r_gc
-from nineDOF_Transform import skew, T_IP, T_IC
+from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM, I_AI, I_H
+from nineDOF_Transform import skew, makeT_IP, makeT_IC
 
 
 def compute_dynamics(state, statedot, control):
     #Getting Aerodynamic Forces and Moments
     Fa_parafoil, Fam_parafoil, Fg_parafoil, Fa_cradle, Fg_cradle, Ma_parafoil, Mam_parafoil, M_gimbal = compute_aerodynamics(state, statedot, control)
 
+    #Computing Transformation Matrices
+    T_IP = makeT_IP(state[3], state[4], state[5])
+    T_IC = makeT_IC(state[6], state[7], state[8])
+    T_PC = T_IP.T @ T_IC
+    T_CP = T_IC.T @ T_IP
+    
     #Calculating A Matrix 
     A11 = m_parafoil * skew(r_gc)
     A12 = 0
