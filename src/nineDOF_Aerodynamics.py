@@ -4,7 +4,7 @@ from scipy.spatial.transform import Rotation
 
 from nineDOF_Control import get_control
 from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, x_pmp, y_pmp, z_pmp, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1, I_H, I_AM, I_AI
-from nineDOF_Transform import skew
+from nineDOF_Transform import skew, T_IP
 from nineDOF_Atmosphere import getAirDensity
 
 
@@ -33,8 +33,8 @@ def compute_aerodynamics(state, statedot, control):
     c_phi, c_theta, c_psi = Rotation.from_quat(c_quat).as_euler('xyz', degrees = False)
 
     #Calculating Alpha and Beta
-    alpha = arctan2(-wG, uG)
-    beta = arctan2(vG, np.sqrt(uG**2 + wG**2)) #////////////REVISIT////////////////
+    alpha = np.arctan2(-wG, uG)
+    beta = np.arctan2(vG, np.sqrt(uG**2 + wG**2)) #////////////REVISIT////////////////
 
     #Getting Air Density
     rho = getAirDensity(state['zG'])
@@ -73,7 +73,7 @@ def compute_aerodynamics(state, statedot, control):
 
     #Aerodynamic Apparent Mass Velocity Derivative Calculation
     V_G_dot = np.array([uG_dot, vG_dot, wG_dot])
-    omega_PI_dot = T_IP(p_phi, p_theta, p_psi).T @ np.array([pP_dot, qP_dot, rP_dot] #???????????????????????
+    omega_PI_dot = T_IP(p_phi, p_theta, p_psi).T @ np.array([pP_dot, qP_dot, rP_dot]) #???????????????????????
     AM_Velocity_dot = construct_AM_Velocity(omega_PI_dot, V_G_dot, r_GMp)
 
     #Force Calculations 
