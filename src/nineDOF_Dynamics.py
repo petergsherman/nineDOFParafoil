@@ -12,10 +12,10 @@ def compute_dynamics(state, statedot, control):
     Fa_parafoil, Fam_parafoil, Fg_parafoil, Fa_cradle, Fg_cradle, Ma_parafoil, Mam_parafoil, M_gimbal = compute_aerodynamics(state, statedot, control)
 
     #Computing Transformation Matrices
-    T_IP = makeT_IP(state[3], state[4], state[5])
-    T_IC = makeT_IC(state[6], state[7], state[8])
-    H_P = makeH(state[12], state[13], state[14])
-    H_C = makeH(state[15], state[16], state[17])
+    T_IP = makeT_IP(state[3:6])
+    T_IC = makeT_IC(state[6:9])
+    H_P = makeH(state[12:15])
+    H_C = makeH(state[15:18])
     T_PC = T_IP.T @ T_IC
     T_CP = T_IC.T @ T_IP
 
@@ -24,6 +24,12 @@ def compute_dynamics(state, statedot, control):
     statedot[3:6] = H_P @ state[12:15] #///////////////REVISIST//////////////////////
     statedot[6:9] = H_C @ state[15:18]
     
+    #Constructing Vectors for Readablitiy
+    vG_P = state[9:12]
+    wp_P = state[12:15]
+    wc_C = state[15:18]
+    vMp_P = vG_P + skew(wp_P @ rGMp_P) #Velocity of Apparent Mass Center 
+
     #Calculating A Matrix 
     A11 = m_parafoil * skew(r_CG_C)
     A12 = 0
@@ -32,7 +38,7 @@ def compute_dynamics(state, statedot, control):
 
     A21 = 0
     A22 = -I_AM @ skew(r_GMp_P) + I_H + (m_parafoil * skew(r_PG_P))
-    A23 = m_parafoil + I_AM #////////////REVISIST COMPARED TO FORTRAN///////////////
+    A23 = (m_parafoil * np.eye(3)) + I_AM #////////////REVISIST COMPARED TO FORTRAN///////////////
     A24 = T_IP.T
 
     A31 = I_cradle
@@ -51,12 +57,34 @@ def compute_dynamics(state, statedot, control):
                   [A41, A42, A43, A44]])
 
     #Calculating B Vector
-    B1 = Fa_cradle + Fg_cradle - m_cradle * T_CP @ (skew(state[12:15]) @ state[9:12]) - m_cradle * state[15:18] @ (skew(state[15:18]) @ r_GC_C)
-    B2 =
-    B3 =
-    B4 =
+    B1 = Fa_cradle + Fg_cradle \
+         - m_cradle * T_CP @ (skew(wp_P) @ vG_P) \
+         - m_cradle * wc_C @ (skew(wc_C) @ r_GC_C)
 
-    B = np.array([B1, 
-                  B2, 
-                  B3, 
-                  B4])
+    B2 = Fa_parafoil + Fg_cradle \
+         - m_parafoil * (skew(wp_P) @ vG_P) \
+         - (skew(wp_P) @ ((I_AM @ vMp_P) + (I_H @ wp_P))) \
+         + m_parafoil * (skew(wp_P) @ (skew(wp_P) @ rPG_P))
+
+    B3 = (T_CP @ M_gimbal) - (skew(wc_C) @ (I_cradle @ wc_C)) #No Tether Included
+
+    B4 = Ma_parafoil + (skew(rPAp_P) @ Fa_parafoil) - M_gimbal \
+         - (((skew(rPMp_P) @ skew(wp_P)) @ (skew(vMp_P) @ I_H) @ (skew(wp_P) @ (I_AI + I_parafoil))) @ wp_P) \
+         - (((skew(rPMp_P) @ (skew(wp_P) @ I_AM)) + (skew(wp_P) @ I_H)) @ vMp_P)
+
+    #Stack into 12×1 (flatten to 12,)
+    B = np.concatenate([B1, B2, B3, B4], axis = 0)
+
+    #Solve A x = B
+    try:
+        x = np.linalg.solve(A,B)
+    except np.linalg.linAlgError:
+        #If A is singular/ill-conditioned in some poses, fall back to least-squares
+        x = np.linalg.lstsq(A, B, rcond = None)[0]
+    
+    #Updating Statedot Vector
+    statedot[15:18] = x[0:3]   # cradle angular velocity dynamics
+    statedot[12:15] = x[3:6]   # parafoil angular velocity dynamics
+    statedot[9:12]  = x[6:9]   # gimbal joint velocity dynamics
+
+    return x
