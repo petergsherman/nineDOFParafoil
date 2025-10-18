@@ -15,7 +15,11 @@ statedot0 = np.array([0, 0, 0, #xGdot, yGdot, zGdot
                       0, 0, 0, #pPdot, qPdot, rPdot
                       0, 0, 0])#pCdot, qCdot, rCdot
 
-state = np.array([1,2,3])
-pos = state[0:3]
-pos += np.array([4, 5, 6])
-print(state[0:3])  # also changed!
+state = np.array(['xG', 'yG', 'zG',
+                   'phiP', 'thetaP', 'psiP',
+                   'phiC', 'thetaC', 'psiC',
+                   'uG', 'vG', 'wG',
+                   'pP', 'qP', 'rP',
+                   'pC', 'qC', 'rC'])
+
+print(state[15:18])
