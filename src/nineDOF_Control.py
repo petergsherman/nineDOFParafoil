@@ -10,7 +10,7 @@ class BaseController:
 # Controller Factory
 # ---------------------------------------
 
-def get_control(name, **kwargs):
+def get_controller(name, **kwargs):
     name = name.lower()
     if name == "basecontroller":
         return BaseController()

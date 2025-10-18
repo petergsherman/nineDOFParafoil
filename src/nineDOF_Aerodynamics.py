@@ -52,9 +52,9 @@ def compute_aerodynamics(state, control):
     Cn = (CNB * beta) + (CNP * p_bar) + (CNR * r_bar) + (CND1 * (deltaL / d_bar_parafoil)) - (CND2 * ((deltaL * deltaS) / d_bar_parafoil)) + (CND1 * (deltaR / d_bar_parafoil)) + (CND2 * ((deltaR * deltaS) / d_bar_parafoil))
 
     #Aerodynamic Astate[12]arent Mass Velocity Calculation
-    V_G = state[9:12]
-    omega_PI = makeT_IP(state[3:6]).T @ state[12:15] #???????????????????????????
-    AM_velocity = construct_AM_Velocity(omega_PI, V_G)
+    #V_G = state[9:12]
+    #omega_PI = makeT_IP(state[3:6]).T @ state[12:15] #???????????????????????????
+    #AM_velocity = construct_AM_Velocity(omega_PI, V_G)
 
     #Aerodynamic Astate[12]arent Mass Velocity Derivative Calculation
     #V_G_dot = statedot[9:12]
