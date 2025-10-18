@@ -1,15 +1,17 @@
 #nineDOF_Dynamics.
 import numpy as np
-from scipy.spatial.transform import Rotation
 
-from nineDOF_Aerodynamics import compute_aerodynamics, constructAMVelocity
-from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM, I_AI, I_H
+from nineDOF_Aerodynamics import compute_aerodynamics
+from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM, I_AI, I_H, K_G, C_G
 from nineDOF_Transform import skew, makeT_IP, makeT_IC, makeH
 
 
-def compute_dynamics(state, statedot, control):
+def compute_dynamics(state, control):
+    #Statedot Vector Creation
+    statedot = np.zeros(18)
+
     #Getting Aerodynamic Forces and Moments
-    Fa_parafoil, Fam_parafoil, Fg_parafoil, Fa_cradle, Fg_cradle, Ma_parafoil, Mam_parafoil, M_gimbal = compute_aerodynamics(state, statedot, control)
+    Fa_parafoil, Fg_parafoil, Fa_cradle, Fg_cradle, Ma_parafoil = compute_aerodynamics(state, control)
 
     #Computing Transformation Matrices
     T_IP = makeT_IP(state[3:6])
@@ -23,6 +25,11 @@ def compute_dynamics(state, statedot, control):
     statedot[0:3] = T_IP @ state[9:12]
     statedot[3:6] = H_P @ state[12:15] #///////////////REVISIST//////////////////////
     statedot[6:9] = H_C @ state[15:18]
+
+    #Computing Gimbal Moment
+    M_gimbal = np.array([0,
+                         0,
+                         K_G(state[5] - state[8]) + C_G(statedot[5] - statedot[8])])
     
     #Constructing Vectors for Readablitiy
     vG_P = state[9:12]
@@ -61,7 +68,7 @@ def compute_dynamics(state, statedot, control):
          - m_cradle * T_CP @ (skew(wp_P) @ vG_P) \
          - m_cradle * wc_C @ (skew(wc_C) @ r_GC_C)
 
-    B2 = Fa_parafoil + Fg_cradle \
+    B2 = Fa_parafoil + Fg_parafoil \
          - m_parafoil * (skew(wp_P) @ vG_P) \
          - (skew(wp_P) @ ((I_AM @ vMp_P) + (I_H @ wp_P))) \
          + m_parafoil * (skew(wp_P) @ (skew(wp_P) @ rPG_P))
@@ -87,4 +94,4 @@ def compute_dynamics(state, statedot, control):
     statedot[12:15] = x[3:6]   # parafoil angular velocity dynamics
     statedot[9:12]  = x[6:9]   # gimbal joint velocity dynamics
 
-    return x
+    return statedot

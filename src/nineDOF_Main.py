@@ -22,4 +22,4 @@ state = np.array(['xG', 'yG', 'zG',
                    'pP', 'qP', 'rP',
                    'pC', 'qC', 'rC'])
 
-print(state[15:18])
+print(state[5])
