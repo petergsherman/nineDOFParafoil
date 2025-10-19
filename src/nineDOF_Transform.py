@@ -43,7 +43,7 @@ def makeH(phi, theta, psi):
             [0,  c_phi,               -s_phi],
             [0,  s_phi / c_theta,     c_phi / c_theta]])
 
-def T_PPI (incidence, nomincidence): # Rotation by Parafoil Incidence Angle 
+def makeT_PPI (incidence, nomincidence): # Rotation by Parafoil Incidence Angle 
     c_incidence = np.cos(incidence + nomincidence)
     s_incidence = np.sin(incidence + nomincidence)
 

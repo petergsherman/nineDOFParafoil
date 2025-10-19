@@ -1,5 +1,7 @@
 #nineDOF_Parameters.py
 import numpy as np
+from nineDOF_Transform import makeT_PPI
+
 
 #Parafoil Parameters
 m_parafoil = 8.99 #Parafoil Mass [kg]
@@ -29,25 +31,33 @@ C_G = 10 #Gimbal Rotational Damping [N-m-s/rad]
 x_gc_C = 0.0 #X Distance from Gimbal to Cradle Center of Gravity [m]
 y_gc_C = 0.0 #Y Distance from Gimbal to Cradle Center of Gravity [m]
 z_gc_C = 0.47 #Z Distance from Gimbal to Cradle Center of Gravity [m]
-r_gc_C = np.array([x_gc_C, y_gc_C, z_gc_C]) #Position Vector from Gimbal to Cradle Center of Gravity
+r_GC_C = np.array([x_gc_C, y_gc_C, z_gc_C]) #Position Vector from Gimbal to Cradle Center of Gravity
+r_CG_C = -r_GC_C
 
-x_gp = 0.0 #X Distance from Cradle to Parafoil Center of Gravity [m]
-y_gp = 0.0 #Y Distance from Cradle to Parafoil Center of Gravity [m]
-z_gp = -7.622 #Z Distance from Cradle to Parafoil Center of Gravity [m]
-r_gp = np.array([x_gp, y_gp, z_gp]) #Position Vector from Cradle to Parafoil Center of Gravity
+x_gp = 0.0 #X Distance from Gimbal to Parafoil Center of Gravity [m]
+y_gp = 0.0 #Y Distance from Gimbal to Parafoil Center of Gravity [m]
+z_gp = -7.622 #Z Distance from Gimbal to Parafoil Center of Gravity [m]
+r_PG_P = np.array([x_gp, y_gp, z_gp]) #Position Vector from Cradle to Parafoil Center of Gravity
 
 x_pr = 0.0 #X Distance from Parafoil Center of Gravity to Rotation Point [m]
 y_pr = 0.0 #Y Distance from Parafoil Center of Gravity to Rotation Point [m]
 z_pr = 0.0 #Z Distance from Parafoil Center of Gravity to Rotation Point [m]
+r_PR_P = np.array([x_pr, y_pr, z_pr])
 
 x_rap = 0.0 #X Distance from Rotation Point to Aerodynamic Center [m]
 y_rap = 0.0 #Y Distance from Rotation Point to Aerodynamic Center [m]
 z_rap = 0.0 #Z Distance from Rotation Point to Aerodynamic Center [m]
+r_RAp_PI = np.array([x_rap, y_rap, z_rap])
+r_PAp_P = np.array([x_rap, y_rap, z_rap]) #SHOULD BE A VALUE BUT VECTOR IS ZERO 
 
 x_pmp = 0.0 #X Distance from Parafoil Center of Gravity to Apparent Mass Center [m]
 y_pmp = 0.0 #Y Distance from Parafoil Center of Gravity to Apparent Mass Center [m]
 z_pmp = 7.622 #Z Distance from Parafoil Center of Gravity to Apparent Mass Center [m]
-r_pmp = np.array([x_pmp, y_pmp, z_pmp]) #Position Vector from Parafoil Center of Gravity to Parafoil Apparent Mass Center
+r_PMp_P = np.array([x_pmp, y_pmp, z_pmp]) #Position Vector from Parafoil Center of Gravity to Parafoil Apparent Mass Center
+
+#Constructed Vectors
+r_GAp_P = -r_PG_P + r_PAp_P #Vector from gimbal to parafoil aero center in parafoil frame
+r_GMp_P = -r_PG_P + r_PMp_P #Vector from gimbal to parafoil apparent mass center in parafoil frame
 
 #Basic Apparent Mass Matrix
 I_AM = ([[0.984, 0,      0],
@@ -105,6 +115,4 @@ def getInterpolatedAero(deltaS, alpha):
     CND2 = np.interp(alpha, x1, AOATable[:,1])
 
     return CD0, CDA2, CL0, CLA, CND2
-
-
 

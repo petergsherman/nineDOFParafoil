@@ -2,7 +2,7 @@
 import numpy as np
 
 from nineDOF_Aerodynamics import compute_aerodynamics
-from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM, I_AI, I_H, K_G, C_G
+from nineDOF_Parameters import m_parafoil, m_cradle, I_parafoil, I_cradle, I_AM, I_AI, I_H, K_G, C_G, r_GC_C, r_CG_C, r_PG_P, r_PMp_P, r_PAp_P, r_GMp_P
 from nineDOF_Transform import skew, makeT_IP, makeT_IC, makeH
 
 
@@ -35,7 +35,7 @@ def compute_dynamics(state, control):
     vG_P = state[9:12]
     wp_P = state[12:15]
     wc_C = state[15:18]
-    vMp_P = vG_P + skew(wp_P @ rGMp_P) #Velocity of Apparent Mass Center 
+    vMp_P = vG_P + skew(wp_P @ r_GMp_P) #Velocity of Apparent Mass Center 
 
     #Calculating A Matrix 
     A11 = m_parafoil * skew(r_CG_C)
@@ -71,13 +71,13 @@ def compute_dynamics(state, control):
     B2 = Fa_parafoil + Fg_parafoil \
          - m_parafoil * (skew(wp_P) @ vG_P) \
          - (skew(wp_P) @ ((I_AM @ vMp_P) + (I_H @ wp_P))) \
-         + m_parafoil * (skew(wp_P) @ (skew(wp_P) @ rPG_P))
+         + m_parafoil * (skew(wp_P) @ (skew(wp_P) @ r_PG_P))
 
     B3 = (T_CP @ M_gimbal) - (skew(wc_C) @ (I_cradle @ wc_C)) #No Tether Included
 
-    B4 = Ma_parafoil + (skew(rPAp_P) @ Fa_parafoil) - M_gimbal \
-         - (((skew(rPMp_P) @ skew(wp_P)) @ (skew(vMp_P) @ I_H) @ (skew(wp_P) @ (I_AI + I_parafoil))) @ wp_P) \
-         - (((skew(rPMp_P) @ (skew(wp_P) @ I_AM)) + (skew(wp_P) @ I_H)) @ vMp_P)
+    B4 = Ma_parafoil + (skew(r_PAp_P) @ Fa_parafoil) - M_gimbal \
+         - (((skew(r_PMp_P) @ skew(wp_P)) @ (skew(vMp_P) @ I_H) @ (skew(wp_P) @ (I_AI + I_parafoil))) @ wp_P) \
+         - (((skew(r_PMp_P) @ (skew(wp_P) @ I_AM)) + (skew(wp_P) @ I_H)) @ vMp_P)
 
     #Stack into 12×1 (flatten to 12,)
     B = np.concatenate([B1, B2, B3, B4], axis = 0)
