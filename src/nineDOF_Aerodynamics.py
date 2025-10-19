@@ -1,14 +1,14 @@
 #nineDOF_Aerodynamics.py
 import numpy as np
 
-from nineDOF_Control import get_control
-from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1, r_pmp
+from nineDOF_Control import get_controller
+from nineDOF_Parameters import A_cradle, A_parafoil, C_D_cradle, b_bar_parafoil, c_bar_parafoil, d_bar_parafoil, deadband_parafoil, delta_nom, getInterpolatedAero, m_cradle, m_parafoil, CM0, CMQ, CMDS, CYB, CNB, CLB, CLP, CLR, CLDA, CNP, CNR, CND1, r_PMp_P
 from nineDOF_Transform import skew, makeT_IP
 from nineDOF_Atmosphere import getAirDensity
 
 
 def construct_AM_Velocity(omega_PI, V_G):
-    AM_Velocity = V_G + skew(omega_PI) @ r_pmp
+    AM_Velocity = V_G + skew(omega_PI) @ r_PMp_P
     return AM_Velocity
     
 
