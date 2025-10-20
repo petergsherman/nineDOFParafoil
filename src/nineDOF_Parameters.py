@@ -1,7 +1,5 @@
 #nineDOF_Parameters.py
 import numpy as np
-from nineDOF_Transform import makeT_PPI
-
 
 #Parafoil Parameters
 m_parafoil = 8.99 #Parafoil Mass [kg]

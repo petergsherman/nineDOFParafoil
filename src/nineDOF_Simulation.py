@@ -24,6 +24,6 @@ def run_simulation(state0, dt=0.001, z_stop=0.0, controller_type="basecontroller
     while state[2] > z_stop:
         state = rk4_step(state, dt, controller)
         simulationData.append(state.copy())
-        print(state[2])
+        print('z = ', state[2], 'u = ', state[9])
 
     return simulationData
