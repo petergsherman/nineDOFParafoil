@@ -2,7 +2,7 @@
 import numpy as np
 from nineDOF_Simulation import run_simulation
 
-state0 = np.array([0, 0, 0, #xG, yG, zG
+state0 = np.array([0, 0, 10, #xG, yG, zG
                    0, 0, 0, #phiP, thetaP, psiP
                    0, 0, 0, #phiC, thetaC, psiC
                    0, 0, 0, #uG, vG, wG
@@ -24,4 +24,4 @@ state = np.array(['xG', 'yG', 'zG',
                    'pC', 'qC', 'rC'])
 '''
 
-data = run_simulation(state0, 0.001, 0, None, None)
+data = run_simulation(state0, 0.001, 0, "basecontroller", None)

@@ -10,18 +10,18 @@ c_bar_parafoil = 3.87 #[m]
 b_bar_parafoil = 6.99 #[m]
 d_bar_parafoil = 1.0 
 deadband_parafoil = 0.0
-I_parafoil = ([[74.56, 0,      0],
-               [0,       14.62, 0],
-               [0,       0,      82.8]]) #[kg*m^2]
+I_parafoil = np.array([[74.56, 0,      0],
+                       [0,       14.62, 0],
+                       [0,       0,      82.8]]) #[kg*m^2]
 
 
 #Cradle Parameters
 m_cradle = 90.0 #Cradle Mass [kg]
 A_cradle = 0.4337 #Cradle Area [m^2]
 C_D_cradle = 1.0 #Cradle Drag Coefficient
-I_cradle = ([[9.378, 0,      0],
-             [0,     6.0518, 0],
-             [0,     0,      6.2401]]) #[kg*m^2]
+I_cradle = np.array([[9.378, 0,      0],
+                     [0,     6.0518, 0],
+                     [0,     0,      6.2401]]) #[kg*m^2]
 
 #Gimbal Parameters
 K_G = 25 #Gimbal Rotational Stiffness [N-m/rad]
@@ -60,19 +60,19 @@ r_GAp_P = -r_PG_P + r_PAp_P #Vector from gimbal to parafoil aero center in paraf
 r_GMp_P = -r_PG_P + r_PMp_P #Vector from gimbal to parafoil apparent mass center in parafoil frame
 
 #Basic Apparent Mass Matrix
-I_AM = ([[0.984, 0,      0],
-         [0,     0.0988, 0],
-         [0,     0,      36.405]]) #[kg]
+I_AM = np.array([[0.984, 0,      0],
+                 [0,     0.0988, 0],
+                 [0,     0,      36.405]]) #[kg]
 
 #Basic Apparent Inertia Matrix
-I_AI = ([[194.21, 0,     0],
-         [0,      7.531, 0],
-         [0,      0,     6.9106]]) #[kg-m]
+I_AI = np.array([[194.21, 0,     0],
+                [0,      7.531, 0],
+                [0,      0,     6.9106]]) #[kg-m]
 
 #Spanwise Camber Matrix
-I_H = ([[0, 0, 0],
-        [0, 0, 0],
-        [0, 0, 0]]) #[kg-m]
+I_H = np.array([[0, 0, 0],
+               [0, 0, 0],
+               [0, 0, 0]]) #[kg-m]
 
 gamma_nom = 0.0610 #Nominal Incidence Angle [rad]
 delta_nom = 0.3 #Nominal Symmetric Break Deflection
@@ -92,13 +92,13 @@ CNP = -0.050
 CNR = -0.212
 CND1 = 0.000
 
-        #       Sig      CD0    CDA2     CL0     CLA
-aeroTable = ([[0.2500, 0.1373, 0.0977, -0.2636, 2.8139],
-              [1.5000, 0.0351, 3.9642, 0.1313, 1.9825]])
-        #      AOA    CNDA2
-AOATable = ([[0.1800, 0.0280], 
-             [0.2500, 0.0350], 
-             [0.3200, 0.0700]])
+                 #       Sig      CD0    CDA2     CL0     CLA
+aeroTable = np.array([[0.2500, 0.1373, 0.0977, -0.2636, 2.8139],
+                      [1.5000, 0.0351, 3.9642, 0.1313, 1.9825]])
+                 #      AOA    CNDA2
+AOATable = np.array([[0.1800, 0.0280], 
+                     [0.2500, 0.0350], 
+                     [0.3200, 0.0700]])
 
 def getInterpolatedAero(deltaS, alpha):
     """
